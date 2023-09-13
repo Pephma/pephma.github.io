@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phrase Voting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .phrase-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .vote-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phrase-container">
+        <p>The cat is the most feared animal there is!</p>
+        <div class="vote-buttons">
+            <button data-id="1" data-type="like" onclick="vote('like', 1, this)" class="like-button">Like</button>
+            <button data-id="1" data-type="dislike" onclick="vote('dislike', 1, this)" class="dislike-button">Dislike</button>
+        </div>
+    </div>
+
+    <div class="phrase-container">
+        <p>Four legs good, two legs bad.</p>
+        <div class="vote-buttons">
+            <button data-id="2" data-type="like" onclick="vote('like', 2, this)" class="like-button">Like</button>
+            <button data-id="2" data-type="dislike" onclick="vote('dislike', 2, this)" class="dislike-button">Dislike</button>
+        </div>
+    </div>
+
+
+
+    <script>
+        let phraseVotes = JSON.parse(localStorage.getItem('phraseVotes')) || {};
+
+        function vote(type, phraseId, button) {
+
+            if (!phraseVotes[phraseId]) {
+                phraseVotes[phraseId] = { like: 0, dislike: 0 };
+            }
+
+            if (type === 'like') {
+                phraseVotes[phraseId].like++;
+            } else if (type === 'dislike') {
+                phraseVotes[phraseId].dislike++;
+            }
+
+            localStorage.setItem('phraseVotes', JSON.stringify(phraseVotes));
+
+            button.innerText = `Voted ${type}`;
+            button.disabled = true;
+            const oppositeButtonType = type === 'like' ? 'dislike' : 'like';
+            const oppositeButton = document.querySelector(`button[data-id="${phraseId}"][data-type="${oppositeButtonType}"]`);
+            oppositeButton.disabled = true;
+
+            updateVotes(phraseId);
+        }
+
+        function updateVotes(phraseId) {
+            const likeCount = phraseVotes[phraseId].like;
+            const dislikeCount = phraseVotes[phraseId].dislike;
+
+            const likeButton = document.querySelector(`button[data-id="${phraseId}"][data-type="like"]`);
+            const dislikeButton = document.querySelector(`button[data-id="${phraseId}"][data-type="dislike"]`);
+
+            likeButton.innerText = `Like (${likeCount})`;
+            dislikeButton.innerText = `Dislike (${dislikeCount})`;
+        }
+    </script>
+</body>
+</html>
